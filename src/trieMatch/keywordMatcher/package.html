@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>KeywordMatcher</title>
+</head>
+<body><em>(keyword lookup)&nbsp;</em>&nbsp;&nbsp; The <strong>KeywordMatcher</strong> package implements several extremely powerful and efficient  keyword matches, including keymatch, in-order matching, prefix matching and weight-based  
+aggregation of multiple matches.  It is based on lexicographic tries. This structure is related to the suffix tree (see Vittier) gives big advantages in search quality as well as performance. 
+ 
+The basic algorithm is to sort the query terms and perform a greedy search over the keymatches (these are also sorted).  By retaining the index arrays to the original order, we can recover the sequence and position data from the  
+results of searching in &quot;sort space&quot;.  This gives a log log speedup over other algorithms, but (more) importantly it also gives a methodology for aggregation of multiple submatches. 
+ 
+<br><br>These capabilities are organized into interfaces and methods, with support for various flavors including:<br><br><table width="567" height="144" border="2" bgcolor="skyblue">
+<tbody><tr><td valign="middle" align="center" ><strong>Valuation / Scoring</strong><br></td><td valign="middle" height="40px">&nbsp;Tokens, term matches, length and positions<br></td></tr><tr>
+<td align="center" valign="middle"><strong>&nbsp;Aggregation / Combining<br></strong></td>
+<td width="50%" height="40px">&nbsp;AND, ANDacc, ANDaccN, OR<br></td></tr>
+<tr>
+<td valign="middle" align="center"><strong>Matching / Collection</strong><br></td>
+<td>&nbsp;All, longest, top, prefix<br></td></tr>
+<tr>
+<td align="center" valign="middle">&nbsp;<strong>Storage / Retrieval</strong><br></td>
+<td>&nbsp;Lexicographicall, prefix trie <br></td></tr>
+</tbody></table><br> 
+ 
+
+</body>
+</html>

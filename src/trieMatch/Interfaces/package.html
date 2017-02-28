@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>This package holds the interfaces that support match generation and other functions. The interfaces include<br><ol><ol><li>A middle-layer wrapper for finding zeros, non-zeros and processing the instances of a group<br> 
+&bull; <font face="Courier New">QueryExpander&lt;S&gt; </font>allocation and expansion of terms over a single data source<br> 
+&bull; <font face="Courier New">QueryBundleExpander&lt;S&gt;</font>&nbsp; allocation, expansion and combination of results for multiple data sources<br>
+</li><li>A pair of interfaces, QueryServer and QueryConnector, to be used with the QueryExpander<br> 
+&bull; <font face="Courier New">QueryServer&lt;S&gt;</font>&nbsp; &quot;upper half&quot; supports multplexing and caching<br>
+&bull; <font face="Courier New">QueryConnector&lt;S&gt;&nbsp;</font> &quot;lower half&quot; gives conditional and unconditional probabilities, over groups and instances</li><li>A functional predicate, <font face="Courier New">foundP</font>, typically &quot;passed into&quot; an evaluator; it is contained within<br>
+
+&bull; <font face="Courier New">PredicateEvaluator&lt;S&gt; </font>contains the foundP<br>The Class <font face="Courier New">ValidateCombination </font>has processing logic, including decision rules tables, etc.</li><li>An interface to combinatorial expansion (see class <font face="Courier New">ChooseCombIF</font> for lazy and eager iterators)<br>
+
+&bull; <font face="Courier New">Chooser&lt;S&gt;</font></li><li>Document and content iterators<br> 
+&bull; <font face="Courier New">ContentIterator&lt;S&gt;<br></font> 
+&bull; <font face="Courier New">DocIterator</font><br></li></ol></ol></body>
+</html>

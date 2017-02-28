@@ -1,0 +1,155 @@
+<html>
+<head>
+<title>README</title>
+</head>
+<body>
+
+<h3>README - <i>Custom Keymatch OneBox</i></h3>
+
+<p>
+The <i>Keymatch OneBox</i> is a Java Servlet that mimics the built-in Keymatch functionality of the Google Search Appliance. If you've outgrown built-in Keymatch, then you can take this OneBox and configure it to your specific needs.
+</p>
+<p>
+This readme describes the simple steps needed to build and install this OneBox
+</p>
+
+<h3>System Requirements</h3>
+The following are required to build and run the Keymatch OneBox provider:
+<ul>
+<li>The <a href="http://code.google.com/p/onebox-servlet-starter-kit/">OneBox Servlet Starter Kit</a> project download</li>
+<li>A J2EE application server supporting servlets and JRE 1.4 or later, where you can deploy your OneBox</li>
+<li>JDK 1.4 or later, to build the Keymatch servlet and WAR file</li>
+<li><a href="http://ant.apache.org/">Ant</a> version 1.6.2 or later, to run the build script</li>
+</ul>
+
+<h3>Contents</h3>
+<table>
+<tr>
+<td>
+<ul>
+<li><code>readme.html</code></li>
+<li><code>keymatch.xml</code></li>
+<li><code>Keymatch.java</code></li>
+<li><code>keymatches</code></li>
+<li><code>TrieKeymatch.java</code></li>
+<li><code>trieMatch/</code></li>
+</ul>
+</td>
+<td>&nbsp;&nbsp;&nbsp;</td>
+<td valign=top>
+<table cellspacing=0 cellpadding=0>
+<tr><td> -- this file</td></tr>
+<tr><td> -- module definition file</td></tr>
+<tr><td> -- provider servlet source code</td></tr>
+<tr><td> -- sample input file</td></tr>
+<tr><td> -- trie-based servlet plugin (optional)</td></tr>
+<tr><td> -- trie-based servlet source code (optional)</td></tr>
+
+</table>
+</td>
+</tr>
+</table>
+
+
+<h3>Building and Installing</h3>
+To get up and running with the Keymatch OneBox module just follow these simple steps:
+<ol>
+<li>Download the <a href="http://code.google.com/p/onebox-servlet-starter-kit/">OneBox Servlet Starter Kit</a> project distribution</li>
+<li>Expand the distribution and modify it as follows:
+	<ul>
+	<li>Copy <code>Keymatch.java</code> into the <code>onebox_servlet_starter_kit/src/</code> subdirectory</li>
+    <li>Modify <code>onebox_servlet_starter_kit/web.xml</code> by adding the following just after the <i>&lt;description&gt;</i> element:<br/>
+	(be sure to correctly set the <code>keymatches</code> file location and correctly point to your J2EE application server)
+	<pre style="color: #1849b5">
+    &lt;servlet&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;keymatch_file&lt;/param-name&gt;
+            &lt;param-value&gt;/keymatches&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;url_prefix&lt;/param-name&gt;
+            &lt;param-value&gt;http://localhost:8080/onebox/Keymatch?&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+        &lt;servlet-name&gt;Keymatch&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;Keymatch&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;Keymatch&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/Keymatch&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+	</pre>
+	</li></ul>
+<li>Optionally, copy the trie-based matcher into the <code>onebox_servlet_starter_kit/src/</code>.
+    <ul>
+    <li>Copy both <code>TrieKeymatch.java</code> and the subdirectory <code>trieMatch/</code> into <code>onebox_servlet_starter_key_/src/</code></li>
+	<li>Modify <code>onebox_servlet_starter_kit/web.xml</code> to use <code>TrieKeymatch</code> instead of <code>Keymatch</code>
+	<pre style="color: #1849b5">
+    &lt;servlet&gt;
+        ...
+        &lt;init-param&gt;
+            &lt;param-name&gt;<b style="color: #103c94">SearchFlavor</b>&lt;/param-name&gt;
+            &lt;param-value&gt;<b style="color: #103c94">all</b>&lt;/param-value&gt; <i> &lt;!-- longest, top, all, exp --&gt; </i>
+        &lt;/init-param&gt;
+        &lt;servlet-name&gt;Keymatch&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;<i><b style="color: #103c94">TrieKeymatch</b></i>&lt;/servlet-class&gt;
+    &lt;/servlet&gt;</pre>
+	</li>
+	<li>The TrieKeymatch is configurable to find <i>all</i>, <i>longest</i>, <i>top</i> or <i>prefix</i> matches.</li>
+	<li>Duplicate URL matches are combined by the aggregation class specified in the <code>aggregatorName</code> servlet parameter</li>
+	<li>See <i>Customizing</i> (below) for more information</li><br>
+	</ul>
+</li>
+<li>Rebuild <code>onebox_servlet_starter_kit/onebox.war</code> using the given <code>onebox_servlet_starter_kit/build.xml</code> Ant script.</li>
+<li>Deploy <code>onebox_servlet_starter_kit/onebox.war</code> to your J2EE application server.  See your application server documentation on how to deploy a WAR.</li>
+<li>Modify the <i>&lt;providerURL&gt;</i> element of the <code>keymatch.xml</code> module definition file to point to your J2EE application server.</li>
+<li>Install the <code>keymatch.xml</code> module definition file into your Google Search Appliance.  See the <a href="https://support.google.com/enterprise/doc/gsa/4x/help/serve_onebox.html">documentation</a> on how to install the OneBox module.</li>
+<li>You should now be able to run queries on the keywords in <a href="keymatches"><code>keymatches</code></a> and see Keymatches in your search results.</li>
+</ol>
+
+<h3>Customizing</h3>
+<p>
+Modify the <code>keymatches</code> file to alter the keywords for which your OneBox shows Keymatches.  The format of the file is one match per line, with each line taking the form of <i>keyword,matchtype,URL,displaytitle</i>.  Possible <i>matchtype</i> values include ExactMatch, KeywordMatch, and PhraseMatch.  For changes to this file to take effect, you'll need to reload(/restart/redeploy) the web application in your J2EE application server.
+</p>
+<p>
+Modify the <code>Keymatch.java</code> Java Servlet to fundamentally change the behavior of the Keymatch OneBox. In this case the <code>onebox.war</code> file can then be rebuilt and redeployed to your application server.
+</p>
+<p>
+The web.xml accepts search customizations under the TrieKeymatcher
+	<pre style="color: #1849b5">
+	          &lt;init-param&gt;
+	             &lt;param-name&gt;keymatch_file&lt;/param-name&gt;
+	             &lt;param-value&gt;/keymatches&lt;/param-value&gt;
+	          &lt;/init-param&gt;
+	          &lt;init-param&gt;
+	            &lt;param-name&gt;url_prefix&lt;/param-name&gt;
+	            &lt;param-value&gt;http://localhost:8080/onebox/Keymatch?&lt;/param-value&gt;
+	          &lt;/init-param&gt;
+	          <em>&lt;init-param&gt;
+	             &lt;param-name&gt;<b style="color: #103c94">SearchFlavor</b>&lt;/param-name&gt;
+	             &lt;!-- longest, top, all, exp --&gt;
+	             &lt;param-value&gt;<b style="color: #103c94">all</b>&lt;/param-value&gt;
+	             &lt;/init-param&gt;
+	          &lt;init-param&gt;
+	             &lt;param-name&gt;<b style="color: #103c94">AggregatorName</b>&lt;/param-name&gt;
+	             &lt;!-- aggregateConstant, aggregateMAX, aggregateMAXacc, aggregateSUM, aggregateSUMacc --&gt;
+	             &lt;param-value&gt;<b style="color: #103c94">aggregateSUM</b>&lt;/param-value&gt;
+	          &lt;/init-param&gt;
+	          &lt;init-param&gt;
+	             &lt;param-name&gt;<b style="color: #103c94">AggregatorParm</b>&lt;/param-name&gt;
+	             &lt;!-- Optional parameter, gives constant to add on each aggregation step. --&gt;
+	             &lt;param-value&gt;<b style="color: #103c94">aggregateSUM</b>&lt;/param-value&gt;
+	          &lt;/init-param&gt;</em>
+	          &lt;servlet-name&gt;Keymatch&lt;/servlet-name&gt;
+	          &lt;!-- Hash-based matching with <i>Keymatch</i> and lexicographic trie matching with <i>TrieKeymatch</i> --&gt;
+	          &lt;servlet-class&gt;<i><b style="color: #103c94">TrieKeymatch</b></i>&lt;/servlet-class&gt;
+</pre>
+<p>
+The <i>&lt;resultsTemplate&gt;</i> element of the <code>keymatch.xml</code> file includes the XSL code that defines what your OneBox results will look like to the end-user.  The given XSL provides a display that mimics the Google Search Appliance built-in Keymatch.  See the <a href="http://code.google.com/enterprise/documentation/oneboxguide.html#providerresultsschema">XML results schema</a> to view the data elements you have to work with when customizing the XSL.
+</p>
+
+&nbsp;
+
+</body>
+</html>

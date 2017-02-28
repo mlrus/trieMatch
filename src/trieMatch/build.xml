@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Build, test and benchmark the trie based matcher. -->
+<!-- Not used in the onebox build. -->
+<project basedir="" default="build" name="trieMatcher">
+    <property environment="env"/>
+    <property name="prjRoot" value="${basedir}"/>
+    <property name="servlet" value="${../lib/servlet-2.3.zip}"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="doc" value="${prjRoot}/doc"/>
+    <property name="sourceFiles" value="${prjRoot}"/>
+    <property name="classes" value="${prjRoot}/classes"/>
+    <property name="lib" value="${prjRoot}/lib"/>
+    <property name="data" value="${prjRoot}/sampleData"/>
+    <property name="output" value="${prjRoot}/output"/>
+    <property name="target=" value="1.5"/>
+    <property name="source" value="1.5"/>
+    <property name="jvmArg" value="-Xmx760M"/>
+    <property name="packageHead" value="trieMatch."/>
+    <property name="MQueryOptions" value="-TH=4 -IT=128"/>
+    <property name="redundantKM" value="keymatches/keymatches.redundant.dat"/>
+    <property name="reasonableKM" value="keymatches/keymatches.reasonable.dat"/>
+    <property name="benchingKM" value="keymatches/keymatches.reasonable.dat"/>   
+    <property name="queries" value="testqueries/bookQueries.500.dat"/>
+    <path id="buildpath">
+        <pathelement location="${classes}"/>
+        <pathelement location="${lib}/servlet-2.3.zip"/>       
+        <pathelement location="${lib}/commons-math-1.1.jar"/>
+    </path>
+    <path id="classpath">
+        <pathelement location="${lib}/triematcher.jar"/>
+        <pathelement location="${lib}/commons-math-1.1.jar"/>
+    </path>
+    <uptodate property="jarIsUptodate" targetfile="${lib}/triematcher.jar">
+        <srcfiles dir="${sourceFiles}" includes="**/*.java"/>
+    </uptodate>
+    <target name="init">
+        <tstamp/>
+        <mkdir dir="${classes}"/>
+        <mkdir dir="${output}/sampleOutput"/>
+    </target>
+    <target name="clean">
+        <delete dir="${classes}"/>
+        <delete dir="${output}/sampleOutput"/>
+        <delete dir="${dist}"/>
+        <delete file="${lib}/triematcher.jar"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <delete dir="${doc}"/>
+    </target>
+    <target depends="init" name="build" unless="jarIsUptodate">
+        <echo message="${ant.project.name}: ${ant.file} "/>
+        <echo message="jarIsUptodate: ${jarIsUptodate}"/>
+        <javac compiler="modern" debug="true" debuglevel="${debuglevel}" source="${source}" listfiles="true" verbose="true" destdir="${classes}">
+            <src path="${sourceFiles}"/>
+            <classpath refid="buildpath"/>
+        </javac>
+    </target>
+    <target depends="build" name="jar" description="put classes into jar" unless="jarIsUptodate">
+        <jar destfile="${lib}/triematcher.jar">
+            <fileset dir="${classes}" includes="**/*.class"/>
+            <fileset dir="${lib}" excludes="**/triematcher.jar"/>
+            <fileset dir="${sourceFiles}" includes="**/*.java"/>
+            <fileset dir="${sourceFiles}" includes="**/*.xml"/>
+            <fileset dir="${prjRoot}/." includes="build.xml"/>
+        </jar>
+    </target>
+    <target name="javadoc">
+        <javadoc access="private" author="true" classpath="lib/keymatch.jar;lib/commons-math-1.1.jar" destdir="doc" doctitle="Trie Search and Keymatch Generation" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="trieMatch.util.aggregation,trieMatch.util.data,trieMatch.consoleApps,trieMatch.util.count,trieMatch.util,trieMatch.docStore,trieMatch.matchGenerators.comboQueries,trieMatch.match,trieMatch.Interfaces,trieMatch.util.coll,trieMatch.keywordMatcher,trieMatch.generators,trieMatch.matchGenerators.BayesMatchGenerator,trieMatch.util.index" source="1.5" sourcepath="src" splitindex="true" use="true" version="true"/>
+    </target>
+    
+    <target name="Query">
+        <java classname="${packageHead}consoleApps.Query" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/KEymatches/keymatches.reasonable.dat ${data}/testQueries/testQueries.txt ${output}/sampleOutput/output.Query -all -deleteOutputFile"/>
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+    <target name="Query500Books">
+        <echo message="Run 500 queies.  Queries were made randomly from words found in book titles."/>
+        <java classname="${packageHead}consoleApps.Query" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/KEymatches/keymatches.reasonable.dat ${data}/testQueries/bookQueries.500.dat ${output}/sampleOutput/output.books.Query -all -deleteOutputFile"/>
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+    <target name="Query500BookPrefixes">
+        <echo message="Run 500 prefix queries with prefix processing.  Queries were made randomly from prefixes of words found in book titles."/>
+        <java classname="${packageHead}consoleApps.Query" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/KEymatches/keymatches.reasonable.dat ${data}/testQueries/bookPrefixQueries.500.dat ${output}/sampleOutput/output.bookPrefixes.EXP.Query -exp -deleteOutputFile"/>
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+    <target name="Query500BookPrefixdatAllmatch">
+        <echo message="Run 500 prefix queries using non-prefix processing (expect the unexpected).  Queries were made randomly from prefixes of words found in book titles."/>
+        <java classname="${packageHead}consoleApps.Query" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/KEymatches/keymatches.reasonable.dat ${data}/testQueries/bookPrefixQueries.500.dat ${output}/sampleOutput/output.bookPrefixes.ALL.Query -exp -deleteOutputFile"/>
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+           
+    <target name="MQuery">
+        <java classname="${packageHead}consoleApps.MultiQuery" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/KEymatches/keymatches.reasonable.dat ${data}/testQueries/testQueries.txt ${output}/sampleOutput/output.MQuery -all ${MQueryOptions}  -deleteOutputFile"/>
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+    <target name="MQuery500Books">
+        <echo message="Run 500 queries as four threads over eight chunks, with queued server.  Queries were made randomly from words found in book titles."/>
+        <java classname="${packageHead}consoleApps.MultiQuery" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/KEymatches/keymatches.reasonable.dat ${data}/testQueries/bookQueries.500.dat ${output}/sampleOutput/output.books.MQuery -all ${MQueryOptions}  -deleteOutputFile"/>
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+    <target name="MQuery500BookPrefixes">
+        <echo message="Run 500 prefix queries with multithreaded prefix processing.  Queries were made randomly from prefixes of words found in book titles."/>
+        <java classname="${packageHead}consoleApps.MultiQuery" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/KEymatches/keymatches.reasonable.dat ${data}/testQueries/bookPrefixQueries.500.dat ${output}/sampleOutput/output.bookPrefixes.EXP.MQuery -exp ${MQueryOptions}  -deleteOutputFile"/>
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+    <target name="MQuery500BookPrefixdatAllmatch">
+        <echo message="Run 500 prefix queries using non-prefix processing (expect the unexpected).  MT. Queries were made randomly from prefixes of words found in book titles."/>
+        <java classname="${packageHead}consoleApps.MultiQuery" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/KEymatches/keymatches.reasonable.dat ${data}/testQueries/bookPrefixQueries.500.dat ${output}/sampleOutput/output.bookPrefixes.ALL.MQuery -exp ${MQueryOptions}  -deleteOutputFile"/>
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+    
+    <target name="PedanticQuery">
+        <java classname="${packageHead}pedanticMatcher.KMTestdriver" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/KEymatches/keymatches.reasonable.dat ${data}/testQueries/testQueries.txt ${output}/sampleOutput/output.PedanticQuery -all -deleteOutputFile"/>
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+    <target name="Pedantic500Books">
+        <echo message="Run 500 queies.  Queries were made randomly from words found in book titles."/>
+        <java classname="${packageHead}pedanticMatcher.KMTestdriver" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/KEymatches/keymatches.reasonable.dat ${data}/testQueries/bookQueries.500.dat ${output}/sampleOutput/output.books.PedanticQuery -all -deleteOutputFile"/>
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+    <target name="Pedantic500BookPrefixes">
+        <echo message="Run 500 prefix queries with prefix processing.  Queries were made randomly from prefixes of words found in book titles."/>
+        <java classname="${packageHead}pedanticMatcher.KMTestdriver" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/KEymatches/keymatches.reasonable.dat ${data}/testQueries/bookPrefixQueries.500.dat ${output}/sampleOutput/output.bookPrefixes.EXP.PedanticQuery -exp -deleteOutputFile"/>
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+    <target name="Pedantic500BookPrefixdatAllmatch">
+        <echo message="Run 500 prefix queries using non-prefix processing (expect the unexpected).  Queries were made randomly from prefixes of words found in book titles."/>
+        <java classname="${packageHead}pedanticMatcher.KMTestdriver" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/KEymatches/keymatches.reasonable.dat ${data}/testQueries/bookPrefixQueries.500.dat ${output}/sampleOutput/output.bookPrefixes.ALL.PedanticQuery -exp -deleteOutputFile"/>
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+    
+    <target name="bench">
+        <echo message="*************** MultiQuery ***************"/>
+        <echo message="MultiQuery -all ${MQueryOptions}"/>
+        <java classname="${packageHead}consoleApps.MultiQuery" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/${benchingKM} ${data}/${queries}  -all ${MQueryOptions} "/>
+            <classpath refid="classpath"/>
+        </java>
+        <echo message="MultiQuery -top ${MQueryOptions}"/>
+        <java classname="${packageHead}consoleApps.MultiQuery" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/${benchingKM} ${data}/${queries}  -top ${MQueryOptions}"/>
+            <classpath refid="classpath"/>
+        </java>
+        <echo message="MultiQuery -longest ${MQueryOptions}"/>
+        <java classname="${packageHead}consoleApps.MultiQuery" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/${benchingKM} ${data}/${queries}  -longest ${MQueryOptions}"/>
+            <classpath refid="classpath"/>
+        </java>
+        <echo message="MultiQuery -exp ${MQueryOptions}"/>
+        <java classname="${packageHead}consoleApps.MultiQuery" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/${benchingKM} ${data}/${queries}  -exp ${MQueryOptions}"/>
+            <classpath refid="classpath"/>
+        </java>
+        
+        <echo message="*************** Plain Query ***************"/>
+         <echo message="Query -all"/>
+        <java classname="${packageHead}consoleApps.Query" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/${benchingKM} ${data}/${queries}  -all "/>
+            <classpath refid="classpath"/>
+        </java>
+        <echo message="Query -top"/>
+        <java classname="${packageHead}consoleApps.Query" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/${benchingKM} ${data}/${queries}  -top"/>
+            <classpath refid="classpath"/>
+        </java>
+        <echo message="Query -longest"/>
+        <java classname="${packageHead}consoleApps.Query" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/${benchingKM} ${data}/${queries}  -longest"/>
+            <classpath refid="classpath"/>
+        </java>
+        <echo message="Query -exp  -aggName AggregateSUMacc"/>
+        <java classname="${packageHead}consoleApps.Query" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/${benchingKM} ${data}/${queries}  -exp  -aggName AggregateSUMacc"/>
+            <classpath refid="classpath"/>
+        </java>
+        <echo message="Query -exp -aggName AggregateMAXacc"/>
+        <java classname="${packageHead}consoleApps.Query" failonerror="true" fork="yes">
+            <jvmarg line="${jvmArg}"/>
+            <arg line="${data}/${benchingKM} ${data}/${queries}  -exp -aggName AggregateMAXacc"/>
+            <classpath refid="classpath"/>
+        </java>
+    </target>
+    
+    <target depends="jar" name="run">
+        <delete dir="${output}/sampleOutput"/>
+        <mkdir dir="${output}/sampleOutput"/>
+        <antcall target="Query"/>
+        <antcall target="MQuery"/>
+        <antcall target="PedanticQuery"/>
+        <antcall target="Query500Books"/>
+        <antcall target="MQuery500Books"/>
+        <antcall target="Pedantic500Books"/>
+        <antcall target="Query500BookPrefixes"/>
+        <antcall target="MQuery500BookPrefixes"/>
+        <antcall target="Pedantic500BookPrefixes"/>
+        <antcall target="Query500BookPrefixdatAllmatch"/>
+        <antcall target="MQuery500BookPrefixdatAllmatch"/>
+        <antcall target="Pedantic500BookPrefixdatAllmatch"/>   
+    </target>
+</project>

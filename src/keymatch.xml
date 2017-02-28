@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<GoogleEnterpriseSources xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+  <onebox type="external">
+
+    <name>keymatch</name>
+
+    <description>The Keymatch onebox mimics the behavior of the Keymatch function.</description>
+
+    <security userAuth="none"/>
+    <trigger triggerType="null"></trigger>
+
+    <providerURL>http://localhost:8080/onebox/Keymatch</providerURL>
+
+    <resultsTemplate>
+      <xsl:template name="directory_results">
+                <a>
+                  <xsl:attribute name="href"><xsl:value-of select="title/urlLink"/></xsl:attribute>
+                  <b><xsl:value-of select="title/urlText"/></b>
+                </a>
+      <div>                     
+        <xsl:for-each select="MODULE_RESULT">
+          <p>
+            <table cellpadding="4" cellspacing="0" border="0" height="40" width="100%">
+               <tr>
+                  <td nowrap="0" bgcolor="#e8e8ff" height="40">
+                      <a>
+                          <xsl:attribute name="href"><xsl:value-of select="U"/></xsl:attribute>
+                          <font size="-1"><b><xsl:value-of select="Title"/></b></font>
+                      </a>
+                      <br/><font size="-1" color="#008000">
+                      <span class="a"><xsl:value-of select="U"/></span></font>
+                  </td>
+                  <td bgcolor="#e8e8ff" height="40" align="right" valign="top"><b>
+                     <font size="-1" color="#2255aa">
+                     Keymatch</font></b></td>
+               </tr>
+            </table>
+           </p>                  
+         </xsl:for-each>
+      </div>
+      </xsl:template>
+    </resultsTemplate>
+
+  </onebox>
+
+</GoogleEnterpriseSources>
+
+
