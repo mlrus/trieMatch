@@ -1,6 +1,6 @@
 //This is unpublished source code. Michah Lerner 2006
 
-package trieMatch.pedanticMatcher;
+package trieMatch.simple.trieMatcher;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,7 +1,7 @@
 //This is unpublished source code.
 //(Pedantic version, not thread-safe)
 
-package trieMatch.pedanticMatcher;
+package trieMatch.simple.trieMatcher;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -13,9 +13,9 @@ import java.util.SortedMap;
 import java.util.Stack;
 import java.util.TreeMap;
 
-import trieMatch.pedanticMatcher.KMatch.MatchType;
-import trieMatch.pedanticMatcher.KMatch.ValueRecord;
-import trieMatch.pedanticMatcher.SortedIndexCollector.IndexedItem;
+import trieMatch.simple.trieMatcher.KMatch.MatchType;
+import trieMatch.simple.trieMatcher.KMatch.ValueRecord;
+import trieMatch.simple.trieMatcher.SortedIndexCollector.IndexedItem;
 
 /**
  * Trie-based matching over totally ordered items.
@@ -201,9 +201,9 @@ public class Tiergen {
 		 * Construct a sorted trie at the word level.  The trie stores all matchtext. 
 		 * The leaf nodes contain a ValueRecord, which holds the type, url and description
 		 * @param matchText
-		 * @param valueRecord
+		 * @param valRecord
 		 */
-		public void add(List<String> matchText, ValueRecord valueRecord) {
+		public void add(List<String> matchText, ValueRecord valRecord) {
 			if (matchText == null || matchText.size() == 0) return;
 			Tiers addpoint = this;
 			Tiers prior = null;
@@ -223,7 +223,7 @@ public class Tiergen {
 			}
 			addpoint.end = true;
 			if(addpoint.valueRecord==null)addpoint.valueRecord = new ArrayList<ValueRecord>();
-			addpoint.valueRecord.add(valueRecord);
+			addpoint.valueRecord.add(valRecord);
 		}
 
 		void printTiers(PrintStream out) {

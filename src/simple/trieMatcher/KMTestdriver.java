@@ -1,12 +1,14 @@
 //This is unpublished source code. Michah Lerner 2006
 
-package trieMatch.pedanticMatcher;
+package trieMatch.simple.trieMatcher;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import trieMatch.util.TOD;
 
 /** 
  * Test driver for simple sweet version of key match 
@@ -15,15 +17,15 @@ import java.util.List;
  */
 
 public class KMTestdriver {	
-	
 	public static void usage() {
 		System.err.println("usage: java -jar file.jar [options] KMatchFilename testinputsFilename [outputFilename]");
 		System.err.println("       options: -all/-longest     -echo/;-noEcho     -deleteOutputFile");
-		System.err.println("                -exp [prefix matching]");
+		System.err.println("                -exp [prefix matching] -numRep=##");
 		System.exit(0);
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
+        System.out.println(TOD.now() + ": KMTestdriver (Trie) EXECUTION BEGINS.");
 		final int KMatchFile=0, testInputsfile=1, outputFile=2;
 		boolean echoMatches = false;
 		boolean addall = false;
@@ -45,6 +47,9 @@ public class KMTestdriver {
 				echoMatches = false;
 			else if (args[i].equalsIgnoreCase("-deleteOutputFile"))
 				deleteOutputfile = true;
+            else if (args[i].toLowerCase().startsWith("-numrep=")) {
+                KMatch.numRepeats=Integer.parseInt(args[i].substring(8));
+            }
 			else
 				filenames.add(args[i]);
 		}
@@ -62,7 +67,6 @@ public class KMTestdriver {
 		System.out.println(new Date() + ": Compute "+(addall?"all":(exp?"prefix":"longest"))+" results.");
 
 		KMatch km = new KMatch(addall,exp,kmFilename);
-		
 		System.out.println(new Date() + ": Loaded " + km.KMatchDetail.size() + " KMatches.");
 		if (echoMatches) {
 			km.keysetStore.printTiers(System.out);

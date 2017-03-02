@@ -4,7 +4,7 @@
 /* Pedantic version for illustrative purposes only */
 /* Version is not validated and is not threadsafe. */
 
-package trieMatch.pedanticMatcher;
+package trieMatch.simple.trieMatcher;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,7 +33,7 @@ import java.util.Map.Entry;
  *
  */
 public class KMatch {
-	
+	static protected int numRepeats=1;
 	public class ValueRecord implements Comparator<ValueRecord> {
 		int score;
 		String name;
@@ -145,35 +145,31 @@ public class KMatch {
 	}
 	
 	void processFile(String in, String out, KMatch km) throws FileNotFoundException {
-		int qcounter = 0;
-		long sumNano = 0;
-		long tSearch, tStop;
-		PrintStream outstream = (out != null) ? safePrintStream(out) : null;
-		KMatch km2 = new KMatch(km);
-		List<String>queries = readQueries(in);
-		for(String s : queries) {
-				if (s == null || s.length() == 0) continue;
-				tSearch = System.nanoTime();
-				List<ValueRecord> ans = km2.keysetStore.findMaxMatch(s.toLowerCase(Locale.getDefault()));
-				Collection<Entry<String, Integer>> rans = reduce(ans);
-				tStop = System.nanoTime();
-				sumNano += (tStop-tSearch);
-				tStop = tStop - tSearch;
-				qcounter++;
-				if (outstream != null) {
-					outstream.println("\nTestcase: " + s);
-					outstream.println("Results: " + ans.size() + " total, " + rans.size() + " unique, time = " + tStop + " ns.");
-						for (Entry<String, Integer> st : rans)outstream.println("  " + st.getKey() + " \tscore="+st.getValue());
-						for (int spacer = 0; spacer < ans.size() - rans.size(); spacer++)
-							outstream.println();
-				}
-				ans = null;
-			} 
-		
-		System.out.printf("%s: queries processed=%d, search time=%8.3e sec, %8.3e sec/query",
-				new Date(), qcounter, (sumNano/1.0e9), (sumNano / (1.0e9 * qcounter)));
-		
-		System.out.println(" [structure="+km2.keysetStore.tiers.tier.getClass().getName()+"]");
+	    int qcounter = 0;
+	    PrintStream outstream = (out != null) ? safePrintStream(out) : null;
+	    KMatch km2 = new KMatch(km);
+	    List<String>queries = readQueries(in);
+	    for(int repeats=0;repeats<numRepeats;repeats++) {
+	        long mtime = System.currentTimeMillis();
+	        qcounter = 0;
+	        for(String s : queries) {
+	            if (s == null || s.length() == 0) continue;
+	            List<ValueRecord> ans = km2.keysetStore.findMaxMatch(s.toLowerCase(Locale.getDefault()));
+	            Collection<Entry<String, Integer>> rans = reduce(ans);
+	            qcounter++;
+	            if (outstream != null) {
+	                outstream.println("\nTestcase: " + s);
+	                outstream.println("Results: " + ans.size() + " total, " + rans.size() + " unique.");
+	                for (Entry<String, Integer> st : rans)outstream.println("  " + st.getKey() + " \tscore="+st.getValue());
+	                for (int spacer = 0; spacer < ans.size() - rans.size(); spacer++)
+	                    outstream.println();
+	            }
+	        } 
+	        mtime=System.currentTimeMillis()-mtime;
+	        System.out.printf("%s: queries processed=%d, search time=%d msec, %8f msec/mquery",
+	                new Date(), qcounter, mtime, (mtime / (1D* qcounter)));
+	        System.out.println(" [structure="+km2.keysetStore.tiers.tier.getClass().getName()+"]");
+	    }
 	}
 
 	public Collection<Entry<String, Integer>> reduce(List<ValueRecord> list) {
