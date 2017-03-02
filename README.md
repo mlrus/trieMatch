@@ -1,6 +1,8 @@
 # trieMatch
 
-The main code is in  ``src/trieMatch/pedanticMatcher``
+The trieMatch provides efficient solution to the KeyMatch problem posed by Google. The solution runs standalone, and also in the Google Search Appliance (GSA) as a *Onebox* extension. 
+
+The simple baseline algorithm code is in  ```src/simple```.  The fully fleshed-out code is ```src/trieMATCH```.  See ```src/README.html``` for detailed instructoon on installation as a *OneBox*.
 
 Lexical trie and discretionary sequencing
 
